@@ -1788,6 +1788,25 @@ async function copyMyChartImage() {
     showNote('복사했습니다. 포스터의 이미지 칸을 누르고 Ctrl+V로 붙여 넣으세요.');
 }
 
+async function saveMyChartImage() {
+    const source = document.getElementById('myChart');
+    if (!myDrawn || !source || !source.width) {
+        alert('먼저 그래프 그리기를 눌러 주세요.');
+        return;
+    }
+    const blob = await chartPngBlob(source);
+    if (!blob) {
+        alert('그래프를 저장하지 못했습니다. 다시 눌러 주세요.');
+        return;
+    }
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.download = '그래프.png';
+    link.href = url;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function setupNavigation() {
     const mobileToggle = document.getElementById('nav-mobile-toggle');
     const mobileMenu = document.getElementById('nav-mobile-menu');
@@ -2149,7 +2168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 이미지 저장 버튼 이벤트 리스너
     document.getElementById('cpi-save-btn')?.addEventListener('click', () => captureArea('cpi-capture-area', '소비자물가지수_분석결과.png'));
     document.getElementById('emp-save-btn')?.addEventListener('click', () => captureArea('emp-capture-area', '고용관련지표_분석결과.png'));
-    document.getElementById('my-save-btn')?.addEventListener('click', () => captureArea('my-capture-area', '내가_고른_데이터_분석결과.png'));
+    document.getElementById('my-save-btn')?.addEventListener('click', () => saveMyChartImage());
 });
 
 // 챗봇용 — 현재 그래프·슬라이더 상태 공유
