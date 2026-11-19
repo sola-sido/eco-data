@@ -118,8 +118,15 @@ function imageFileFromClipboard(event) {
     return null;
 }
 
+function savedAtLabel(date = new Date()) {
+    const pad = value => String(value).padStart(2, '0');
+    return `저장 일시: ${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 function printPoster() {
     posterFields().forEach(fitPosterField);
+    const savedAt = document.getElementById('poster-saved-at');
+    if (savedAt) savedAt.textContent = savedAtLabel();
     const placeholders = posterFields().map(field => [field, field.getAttribute('placeholder')]);
     placeholders.forEach(([field]) => field.removeAttribute('placeholder'));
     document.body.classList.add('poster-printing');
@@ -141,6 +148,7 @@ function printPoster() {
             if (placeholder != null) field.setAttribute('placeholder', placeholder);
         });
         document.title = previousTitle;
+        if (savedAt) savedAt.textContent = '';
         document.body.classList.remove('poster-printing');
         window.removeEventListener('afterprint', restore);
     };

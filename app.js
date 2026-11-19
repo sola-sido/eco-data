@@ -1743,15 +1743,28 @@ function setupMyDataExplorer() {
     });
 }
 
-function chartPngBlob(source) {
+function savedAtLabel(date = new Date()) {
+    const pad = value => String(value).padStart(2, '0');
+    return `저장 일시: ${date.getFullYear()}.${pad(date.getMonth() + 1)}.${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function chartPngBlob(source, caption) {
     const pad = 24;
+    const captionHeight = caption ? Math.max(56, Math.round(source.width * 0.05)) : 0;
     const canvas = document.createElement('canvas');
     canvas.width = source.width + pad * 2;
-    canvas.height = source.height + pad * 2;
+    canvas.height = source.height + pad * 2 + captionHeight;
     const ctx = canvas.getContext('2d');
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(source, pad, pad);
+    if (caption) {
+        ctx.fillStyle = '#374151';
+        ctx.font = `700 ${Math.max(22, Math.round(captionHeight * 0.38))}px "Malgun Gothic", sans-serif`;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(caption, canvas.width - pad, source.height + pad + captionHeight / 2);
+    }
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
@@ -1794,7 +1807,7 @@ async function saveMyChartImage() {
         alert('먼저 그래프 그리기를 눌러 주세요.');
         return;
     }
-    const blob = await chartPngBlob(source);
+    const blob = await chartPngBlob(source, savedAtLabel());
     if (!blob) {
         alert('그래프를 저장하지 못했습니다. 다시 눌러 주세요.');
         return;
