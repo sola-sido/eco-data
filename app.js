@@ -1781,7 +1781,7 @@ async function copyMyChartImage() {
         return;
     }
 
-    const blobPromise = chartPngBlob(source);
+    const blobPromise = chartPngBlob(source, savedAtLabel());
     if (navigator.clipboard && window.ClipboardItem) {
         try {
             await navigator.clipboard.write([
